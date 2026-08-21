@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="warm">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHC Pedakallepalli — Records & Portals</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,500&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<style>
+/* ─────────────────────────────────────────
+   CSS VARIABLES — BASE FONT SCALE
+   JS writes --fs-base dynamically based
+   on screen width so text is always
+   comfortably readable for elder users.
+───────────────────────────────────────── */
+:root {
+  --fs-base:    16px;   /* overridden by JS */
+  --ff-serif:   'Fraunces', Georgia, serif;
+  --ff-sans:    'Geist', system-ui, sans-serif;
+  --ff-mono:    'Geist Mono', monospace;
+  --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring:cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─────────────────────────────────────────
+   THEMES
+───────────────────────────────────────── */
+[data-theme="warm"] {
+  --bg:         #F5F0E8;
+  --bg-2:       #EDE8DE;
+  --bg-3:       #E4DDD0;
+  --surface:    #FDFAF5;
+  --border:     rgba(60,45,20,0.10);
+  --border-em:  rgba(60,45,20,0.22);
+  --ink:        #1C1610;
+  --ink-2:      #5C5040;
+  --ink-3:      #9C8E7A;
+  --accent:     #2D5016;
+  --accent-2:   #3D6B20;
+  --gold:       #B8860B;
+  --gold-lt:    rgba(184,134,11,0.13);
+  --card-hover: #FDFAF5;
+  --shadow-sm:  0 1px 3px rgba(28,22,16,0.07);
+  --shadow-md:  0 4px 18px rgba(28,22,16,0.09);
+  --shadow-lg:  0 12px 40px rgba(28,22,16,0.13);
+  --splash-bg:  #1C1610;
+  --splash-fg:  #F5F0E8;
+}
+[data-theme="slate"] {
+  --bg:         #F0F2F5;
+  --bg-2:       #E4E8EE;
+  --bg-3:       #D6DCE6;
+  --surface:    #FAFBFC;
+  --border:     rgba(20,30,50,0.09);
+  --border-em:  rgba(20,30,50,0.22);
+  --ink:        #0F1929;
+  --ink-2:      #3D4F66;
+  --ink-3:      #7A8FA8;
+  --accent:     #1A4480;
+  --accent-2:   #2258A8;
+  --gold:       #C07D20;
+  --gold-lt:    rgba(192,125,32,0.12);
+  --card-hover: #FAFBFC;
+  --shadow-sm:  0 1px 3px rgba(15,25,41,0.07);
+  --shadow-md:  0 4px 18px rgba(15,25,41,0.09);
+  --shadow-lg:  0 12px 40px rgba(15,25,41,0.12);
+  --splash-bg:  #0F1929;
+  --splash-fg:  #F0F2F5;
+}
+[data-theme="dusk"] {
+  --bg:         #1A1820;
+  --bg-2:       #211F28;
+  --bg-3:       #2A2832;
+  --surface:    #252330;
+  --border:     rgba(255,255,255,0.07);
+  --border-em:  rgba(255,255,255,0.16);
+  --ink:        #F2EEE8;
+  --ink-2:      #A09880;
+  --ink-3:      #60584C;
+  --accent:     #C8A96E;
+  --accent-2:   #DFC080;
+  --gold:       #C8A96E;
+  --gold-lt:    rgba(200,169,110,0.13);
+  --card-hover: #2E2C38;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.22);
+  --shadow-md:  0 4px 18px rgba(0,0,0,0.30);
+  --shadow-lg:  0 12px 40px rgba(0,0,0,0.42);
+  --splash-bg:  #0E0D14;
+  --splash-fg:  #F2EEE8;
+}
+
+/* ─────────────────────────────────────────
+   RESET
+───────────────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { overflow-x:hidden; -webkit-text-size-adjust:100%; }
+
+body {
+  font-family: var(--ff-sans);
+  font-size: var(--fs-base);   /* scales with JS */
+  background: var(--bg);
+  color: var(--ink);
+  overflow-x: hidden;
+  min-height: 100vh;
+  transition: background 0.4s, color 0.4s;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input  { font-family: inherit; border: none; outline: none; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-2); }
+::-webkit-scrollbar-thumb { background: var(--border-em); border-radius: 99px; }
+
+/* ─────────────────────────────────────────
+   SPLASH
+───────────────────────────────────────── */
+#splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--splash-bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2rem;
+  transition: opacity 0.55s var(--ease-out), transform 0.55s var(--ease-out);
+}
+.sp-ring {
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  animation: fadeUp 0.6s var(--ease-out) both;
+}
+.sp-ring::after {
+  content: '';
+  position: absolute; inset: -6px; border-radius: 50%;
+  border: 1px dashed rgba(255,255,255,0.08);
+  animation: rotateSlow 14s linear infinite;
+}
+.sp-ring svg { color: var(--splash-fg); width: 28px; height: 28px; stroke-width: 1.4; }
+.sp-text {
+  text-align: center;
+  animation: fadeUp 0.6s var(--ease-out) 0.12s both;
+}
+.sp-text h1 {
+  font-family: var(--ff-serif);
+  font-size: 1.7em;
+  font-weight: 500;
+  color: var(--splash-fg);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.sp-text p {
+  margin-top: 0.4rem;
+  font-family: var(--ff-mono);
+  font-size: 0.6em;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.32);
+  text-transform: uppercase;
+}
+.sp-bar-wrap {
+  width: 140px;
+  animation: fadeUp 0.6s var(--ease-out) 0.24s both;
+}
+.sp-bar { height: 1.5px; background: rgba(255,255,255,0.10); border-radius: 99px; overflow: hidden; }
+.sp-bar-fill {
+  height: 100%; width: 0;
+  background: rgba(255,255,255,0.7);
+  animation: fillBar 2.1s var(--ease-out) 0.3s forwards;
+  border-radius: 99px;
+}
+
+/* ─────────────────────────────────────────
+   OVERLAYS
+───────────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0; z-index: 500;
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; gap: 1rem;
+  background: rgba(0,0,0,0.32);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.overlay.on { display: flex; }
+.ov-ring {
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.14);
+  border-top-color: rgba(255,255,255,0.82);
+  animation: spin 0.8s linear infinite;
+}
+.ov-label {
+  font-family: var(--ff-mono);
+  font-size: 0.65em;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.65);
+  text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────
+   SHELL — sidebar + main
+───────────────────────────────────────── */
+#app { opacity:0; transform:translateY(8px); transition: opacity 0.65s var(--ease-out), transform 0.65s var(--ease-out); min-height:100vh; }
+#app.show { opacity:1; transform:none; }
+
+.shell {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  min-height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* ─────────────────────────────────────────
+   SIDEBAR
+───────────────────────────────────────── */
+.sidebar {
+  background: var(--bg-2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 1.8rem 1.4rem;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  transition: background 0.4s, border-color 0.4s, transform 0.3s var(--ease-out);
+  flex-shrink: 0;
+  z-index: 210;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+/* LOGO */
+.sb-logo {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.6rem;
+  flex-shrink: 0;
+}
+.sb-mark {
+  width: 42px; height: 42px; border-radius: 11px;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sb-mark svg { width: 20px; height: 20px; stroke-width: 1.6; }
+.sb-name {
+  font-family: var(--ff-serif);
+  font-size: 1em;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.sb-sub {
+  font-family: var(--ff-mono);
+  font-size: 0.58em;
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* NAV */
+.sb-nav { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; }
+
+.sb-nav-label {
+  font-family: var(--ff-mono);
+  font-size: 0.58em;
+  letter-spacing: 0.14em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  padding: 0.9rem 0.6rem 0.35rem;
+}
+
+.nav-btn {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 9px;
+  color: var(--ink-2);
+  font-size: 0.88em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+  border: 1px solid transparent;
+  user-select: none;
+  width: 100%;
+  text-align: left;
+}
+.nav-btn svg { width: 16px; height: 16px; stroke-width: 1.8; flex-shrink: 0; opacity: 0.7; }
+.nav-btn:hover { background: var(--bg-3); color: var(--ink); }
+.nav-btn.active {
+  background: var(--surface);
+  color: var(--accent);
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+}
+.nav-btn.active svg { opacity: 1; }
+
+/* BOTTOM AREA */
+.sb-bottom {
+  margin-top: auto;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 1rem;
+  flex-shrink: 0;
+}
+.live-badge {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--gold-lt);
+  border-radius: 8px;
+  border: 1px solid rgba(184,134,11,0.15);
+}
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; animation: blink 2.2s ease infinite; }
+.live-text { font-family: var(--ff-mono); font-size: 0.6em; letter-spacing: 0.10em; color: var(--gold); text-transform: uppercase; }
+
+.theme-block { display: flex; flex-direction: column; gap: 0.5rem; }
+.theme-label { font-family: var(--ff-mono); font-size: 0.58em; letter-spacing: 0.14em; color: var(--ink-3); text-transform: uppercase; }
+.swatches { display: flex; gap: 0.4rem; }
+.swatch {
+  width: 30px; height: 30px; border-radius: 8px;
+  cursor: pointer; border: 2px solid transparent;
+  transition: all 0.18s; flex-shrink: 0;
+}
+.swatch:hover { transform: scale(1.08); }
+.swatch.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+.swatch[data-t="warm"]  { background: linear-gradient(135deg, #F5F0E8 50%, #2D5016 50%); }
+.swatch[data-t="slate"] { background: linear-gradient(135deg, #F0F2F5 50%, #1A4480 50%); }
+.swatch[data-t="dusk"]  { background: linear-gradient(135deg, #1A1820 50%, #C8A96E 50%); }
+
+/* TEXT SIZE SLIDER */
+.size-block { display: flex; flex-direction: column; gap: 0.5rem; }
+.size-label-row {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.size-label { font-family: var(--ff-mono); font-size: 0.58em; letter-spacing: 0.14em; color: var(--ink-3); text-transform: uppercase; }
+.size-val { font-family: var(--ff-mono); font-size: 0.62em; color: var(--accent); font-weight: 500; }
+.size-btns { display: flex; gap: 0.4rem; }
+.sz-btn {
+  flex: 1; padding: 0.45rem;
+  border-radius: 7px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--ink-2);
+  font-size: 0.78em;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.sz-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ─────────────────────────────────────────
+   COLOUR WHEEL BLOCK
+───────────────────────────────────────── */
+.color-block { display: flex; flex-direction: column; gap: 0.55rem; position: relative; }
+
+.color-label-row {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.color-label { font-family: var(--ff-mono); font-size: 0.58em; letter-spacing: 0.14em; color: var(--ink-3); text-transform: uppercase; }
+
+/* The trigger button — shows current accent as a ring */
+.color-trigger {
+  display: flex; align-items: center; gap: 0.55rem;
+  width: 100%; padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.color-trigger:hover { border-color: var(--border-em); background: var(--surface); }
+.color-dot-preview {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--border-em);
+  flex-shrink: 0;
+  transition: background 0.2s;
+  box-shadow: 0 0 0 2px var(--bg);
+}
+.color-trigger-label {
+  font-family: var(--ff-mono);
+  font-size: 0.64em; color: var(--ink-2);
+  flex: 1; text-align: left;
+  letter-spacing: 0.04em;
+}
+.color-trigger-arrow {
+  color: var(--ink-3);
+  transition: transform 0.22s;
+}
+.color-trigger-arrow svg { width: 12px; height: 12px; }
+.color-trigger.open .color-trigger-arrow { transform: rotate(180deg); }
+
+/* POPOVER */
+.color-popover {
+  display: none;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border-em);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 10;
+}
+.color-popover.open { display: flex; }
+
+/* Wheel canvas */
+.wheel-wrap {
+  display: flex; justify-content: center; align-items: center;
+  position: relative;
+}
+#colorWheel {
+  border-radius: 50%;
+  cursor: crosshair;
+  display: block;
+  touch-action: none;
+}
+.wheel-cursor {
+  position: absolute;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+  box-shadow: 0 0 0 1.5px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.3);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: background 0.1s;
+}
+
+/* Lightness slider */
+.lightness-wrap { display: flex; flex-direction: column; gap: 0.3rem; }
+.lightness-label {
+  font-family: var(--ff-mono); font-size: 0.56em;
+  letter-spacing: 0.12em; color: var(--ink-3); text-transform: uppercase;
+}
+#lightnessSlider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 8px; border-radius: 99px;
+  outline: none; cursor: pointer;
+  border: 1px solid var(--border);
+}
+#lightnessSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(0,0,0,0.25);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  cursor: pointer;
+}
+
+/* Preview strip — shows accent applied to real UI elements */
+.color-preview-strip {
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.preview-strip-label {
+  font-family: var(--ff-mono); font-size: 0.56em;
+  letter-spacing: 0.12em; color: var(--ink-3); text-transform: uppercase;
+}
+.preview-elements {
+  display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;
+}
+.prev-btn {
+  padding: 0.3rem 0.75rem; border-radius: 6px;
+  font-size: 0.72em; font-weight: 600;
+  background: var(--accent); color: #fff;
+  border: none; cursor: default;
+  transition: background 0.2s;
+}
+.prev-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.prev-icon svg { width: 14px; height: 14px; color: #fff; stroke-width: 1.8; }
+.prev-text {
+  font-family: var(--ff-mono); font-size: 0.68em;
+  font-weight: 600; color: var(--accent);
+  transition: color 0.2s;
+  letter-spacing: 0.04em;
+}
+.prev-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent); transition: background 0.2s;
+}
+
+/* Preset hues row */
+.hue-presets {
+  display: flex; gap: 0.35rem; flex-wrap: wrap;
+}
+.hue-preset {
+  width: 22px; height: 22px; border-radius: 6px;
+  cursor: pointer; border: 2px solid transparent;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.hue-preset:hover { transform: scale(1.15); }
+.hue-preset.active-preset {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1.5px var(--bg);
+}
+
+/* Reset button */
+.color-reset {
+  width: 100%; padding: 0.42rem;
+  border-radius: 7px;
+  background: var(--bg-3); border: 1px solid var(--border);
+  color: var(--ink-3); font-size: 0.72em;
+  font-family: var(--ff-mono); letter-spacing: 0.08em;
+  cursor: pointer; transition: all 0.15s;
+}
+.color-reset:hover { background: var(--bg-2); color: var(--ink-2); border-color: var(--border-em); }
+
+/* ─────────────────────────────────────────
+   MAIN
+───────────────────────────────────────── */
+.main {
+  display: flex; flex-direction: column;
+  min-width: 0; overflow-x: hidden;
+  grid-column: 2;
+}
+
+/* TOP BAR */
+.topbar {
+  display: flex; align-items: center; gap: 0.85rem;
+  padding: 1.1rem 1.8rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 50;
+  transition: background 0.4s, border-color 0.4s;
+  min-width: 0;
+}
+.mob-ham {
+  display: none; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 9px;
+  background: var(--bg-2); border: 1px solid var(--border);
+  color: var(--ink-2); flex-shrink: 0;
+  transition: all 0.15s;
+}
+.mob-ham:hover { background: var(--bg-3); }
+.mob-ham svg { width: 17px; height: 17px; stroke-width: 2; }
+.topbar-title {
+  font-family: var(--ff-serif);
+  font-size: 1.05em;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+.tb-div { width: 1px; height: 18px; background: var(--border-em); flex-shrink: 0; }
+.search-wrap {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 0.55rem;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 0 0.9rem;
+  height: 40px;
+  transition: all 0.18s;
+}
+.search-wrap:focus-within {
+  border-color: var(--border-em);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px var(--gold-lt);
+}
+.search-wrap svg { width: 15px; height: 15px; color: var(--ink-3); flex-shrink: 0; stroke-width: 2; }
+.search-wrap input {
+  flex: 1; min-width: 0;
+  background: none; color: var(--ink);
+  font-size: 0.88em; font-weight: 400;
+}
+.search-wrap input::placeholder { color: var(--ink-3); }
+.sb-back {
+  display: none; align-items: center; gap: 0.45rem;
+  padding: 0 0.95rem; height: 40px; border-radius: 9px;
+  background: var(--accent); color: #fff;
+  font-size: 0.84em; font-weight: 600;
+  white-space: nowrap; flex-shrink: 0;
+  transition: all 0.18s;
+  box-shadow: var(--shadow-sm);
+}
+.sb-back:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.sb-back.show { display: flex; }
+.sb-back svg { width: 14px; height: 14px; stroke-width: 2.5; }
+
+/* MOBILE OVERLAY */
+.mob-shade {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.38);
+}
+.mob-shade.on { display: block; }
+
+/* ─────────────────────────────────────────
+   CONTENT
+───────────────────────────────────────── */
+.content { padding: 1.8rem; flex: 1; min-width: 0; }
+
+/* HERO */
+.hero {
+  margin-bottom: 2rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.hero h1 {
+  font-family: var(--ff-serif);
+  font-size: clamp(1.6em, 5vw, 2.4em);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero p {
+  margin-top: 0.55rem;
+  font-size: 0.9em;
+  color: var(--ink-3);
+  line-height: 1.65;
+  max-width: 460px;
+}
+
+/* SECTION DIVIDER — used for WEB PORTALS heading */
+.section-divider {
+  display: flex; align-items: center; gap: 1rem;
+  margin: 2.5rem 0 1.4rem;
+}
+.sec-line { flex: 1; height: 1px; background: var(--border); }
+.sec-label {
+  font-family: var(--ff-mono);
+  font-size: 0.62em;
+  letter-spacing: 0.16em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.sec-pill {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.22rem 0.7rem;
+  background: var(--gold-lt);
+  border: 1px solid rgba(184,134,11,0.18);
+  border-radius: 99px;
+  font-family: var(--ff-mono);
+  font-size: 0.58em;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────
+   CARDS GRID
+───────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 1.2rem 1.2rem 1rem;
+  cursor: pointer;
+  display: flex; flex-direction: column; gap: 0.85rem;
+  transition: all 0.22s var(--ease-out);
+  box-shadow: var(--shadow-sm);
+  opacity: 0; transform: translateY(12px);
+  position: relative; overflow: hidden;
+  outline: none;
+}
+.card.in { animation: cardIn 0.42s var(--ease-out) forwards; }
+
+/* top accent bar */
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2.5px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.28s var(--ease-out);
+  border-radius: 99px;
+}
+.card:hover { border-color: var(--border-em); background: var(--card-hover); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+.card:hover::before { transform: scaleX(1); }
+.card:active { transform: translateY(0); }
+.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* icon */
+.c-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  background: var(--bg-2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); flex-shrink: 0;
+  transition: all 0.22s;
+}
+.c-icon svg { width: 18px; height: 18px; stroke-width: 1.6; }
+.card:hover .c-icon { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* name */
+.c-name {
+  font-size: 0.9em; font-weight: 600;
+  color: var(--ink); line-height: 1.35;
+  letter-spacing: -0.005em; flex: 1;
+}
+
+/* footer */
+.c-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto;
+}
+.c-meta {
+  font-family: var(--ff-mono);
+  font-size: 0.6em; color: var(--ink-3);
+  letter-spacing: 0.07em; text-transform: uppercase;
+}
+.c-arrow {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: var(--bg-2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-3); flex-shrink: 0;
+  transition: all 0.22s;
+}
+.c-arrow svg { width: 12px; height: 12px; }
+.card:hover .c-arrow { background: var(--accent); border-color: var(--accent); color: #fff; transform: rotate(-45deg); }
+
+/* empty state */
+.empty {
+  grid-column: 1/-1; padding: 3.5rem 1rem; text-align: center;
+}
+.empty-icon {
+  width: 50px; height: 50px; border-radius: 12px;
+  background: var(--bg-2); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-3); margin: 0 auto 0.85rem;
+}
+.empty-icon svg { width: 22px; height: 22px; stroke-width: 1.4; }
+.empty h3 { font-family: var(--ff-serif); font-size: 1.05em; font-weight: 500; color: var(--ink-2); }
+.empty p  { font-size: 0.82em; color: var(--ink-3); margin-top: 0.3rem; }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────── */
+@media (max-width: 820px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; left:0; top:0; bottom:0;
+    width: 270px; z-index: 210;
+    transform: translateX(-100%);
+    transition: transform 0.3s var(--ease-out), background 0.4s, border-color 0.4s;
+  }
+  .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+  .main { grid-column: 1; }
+  .mob-ham { display: flex; }
+  .topbar { padding: 0.9rem 1.1rem; }
+  .content { padding: 1.1rem; }
+  .tb-div { display: none; }
+  .topbar-title { display: none; }
+}
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .card { padding: 1rem 0.9rem 0.9rem; gap: 0.7rem; }
+}
+@media (max-width: 340px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ─────────────────────────────────────────
+   KEYFRAMES
+───────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:none; }
+}
+@keyframes fillBar { to { width:100%; } }
+@keyframes rotateSlow { to { transform:rotate(360deg); } }
+@keyframes blink {
+  0%,100% { opacity:1; }
+  50%      { opacity:0.3; }
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes cardIn {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="sp-ring">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+  </div>
+  <div class="sp-text">
+    <h1>PHC Pedakallepalli</h1>
+    <p>Records &amp; Portals · AP Health</p>
+  </div>
+  <div class="sp-bar-wrap">
+    <div class="sp-bar"><div class="sp-bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- NAV OVERLAY -->
+<div class="overlay" id="navOv">
+  <div class="ov-ring"></div>
+  <div class="ov-label" id="navOvLabel">Loading…</div>
+</div>
+<!-- LINK OVERLAY -->
+<div class="overlay" id="linkOv">
+  <div class="ov-ring"></div>
+  <div class="ov-label">Opening…</div>
+</div>
+
+<!-- MOBILE SHADE -->
+<div class="mob-shade" id="mobShade" onclick="closeSidebar()"></div>
+
+<!-- APP -->
+<div id="app">
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sb-logo">
+      <div class="sb-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div>
+        <div class="sb-name">PHC Pedakallepalli</div>
+        <div class="sb-sub">Andhra Pradesh Health</div>
+      </div>
+    </div>
+
+    <div class="sb-nav">
+      <div class="sb-nav-label">Sections</div>
+      <button class="nav-btn active" id="nb-records" onclick="goRecords()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        PHC Records
+      </button>
+      <button class="nav-btn" id="nb-portals" onclick="goPortals()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+        Web Portals
+      </button>
+    </div>
+
+    <div class="sb-bottom">
+
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        <div class="live-text">FY 2026 – 27 Active</div>
+      </div>
+
+      <div class="theme-block">
+        <div class="theme-label">Theme</div>
+        <div class="swatches">
+          <div class="swatch on"  data-t="warm"  title="Warm"  onclick="setTheme('warm')"></div>
+          <div class="swatch"     data-t="slate" title="Slate" onclick="setTheme('slate')"></div>
+          <div class="swatch"     data-t="dusk"  title="Dusk"  onclick="setTheme('dusk')"></div>
+        </div>
+      </div>
+
+      <div class="size-block">
+        <div class="size-label-row">
+          <span class="size-label">Text Size</span>
+          <span class="size-val" id="sizeVal">A</span>
+        </div>
+        <div class="size-btns">
+          <button class="sz-btn" onclick="changeSize(-1)" title="Smaller">A−</button>
+          <button class="sz-btn" onclick="changeSize(0)"  title="Reset">Reset</button>
+          <button class="sz-btn" onclick="changeSize(1)"  title="Larger">A+</button>
+        </div>
+      </div>
+
+      <!-- COLOUR WHEEL -->
+      <div class="color-block">
+        <div class="color-label-row">
+          <span class="color-label">Accent Colour</span>
+        </div>
+        <button class="color-trigger" id="colorTrigger" onclick="toggleColorPop()">
+          <div class="color-dot-preview" id="colorDotPreview"></div>
+          <span class="color-trigger-label" id="colorTriggerLabel">#2D5016</span>
+          <span class="color-trigger-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </button>
+        <div class="color-popover" id="colorPopover">
+
+          <!-- Wheel -->
+          <div class="wheel-wrap">
+            <canvas id="colorWheel" width="160" height="160"></canvas>
+            <div class="wheel-cursor" id="wheelCursor"></div>
+          </div>
+
+          <!-- Lightness -->
+          <div class="lightness-wrap">
+            <div class="lightness-label">Lightness</div>
+            <input type="range" id="lightnessSlider" min="15" max="75" value="35">
+          </div>
+
+          <!-- Presets -->
+          <div class="hue-presets" id="huePresets"></div>
+
+          <!-- Live Preview -->
+          <div class="color-preview-strip">
+            <div class="preview-strip-label">Preview</div>
+            <div class="preview-elements">
+              <button class="prev-btn" id="prevBtn">Button</button>
+              <div class="prev-icon" id="prevIcon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <span class="prev-text" id="prevText">Link Text</span>
+              <div class="prev-dot" id="prevDot"></div>
+            </div>
+          </div>
+
+          <button class="color-reset" onclick="resetAccentColor()">↺ Reset to theme default</button>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <button class="mob-ham" onclick="openSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span class="topbar-title" id="topTitle">PHC Records</span>
+      <div class="tb-div"></div>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search…" autocomplete="off" spellcheck="false">
+      </div>
+      <button class="sb-back" id="backBtn" onclick="goRecords()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg>
+        PHC Records
+      </button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <div class="hero">
+        <h1 id="heroTitle">PHC <em>Records</em></h1>
+        <p id="heroSub">All clinical reports, staff records, programme data, and administrative documents for PHC Pedakallepalli.</p>
+      </div>
+
+      <!-- GRID injected here -->
+      <div class="grid" id="grid"></div>
+
+      <!-- Web Portals section (shown only on records page) -->
+      <div id="portalsSection" style="display:none;">
+        <div class="section-divider">
+          <div class="sec-line"></div>
+          <div class="sec-label">Web Portals</div>
+          <div class="sec-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:9px;height:9px;stroke-width:2.2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20"/></svg>
+            Government Portals
+          </div>
+          <div class="sec-line"></div>
+        </div>
+        <div class="grid" id="portalsGrid"></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+</div><!-- /app -->
+
+<script>
+/* ═══════════════════════════════════════
+   ADAPTIVE FONT SCALING
+   Algorithm: measures screen width, sets
+   a comfortable base rem for elder users.
+   Mobile (<600px)  → 18px base
+   Tablet (600–900) → 16px base
+   Desktop (>900)   → 15px base
+   User can override ±3 steps via buttons.
+═══════════════════════════════════════ */
+const FONT_STEPS   = [13, 14, 15, 16, 17, 18, 19, 20, 22];
+const BASE_DESKTOP = 4;  // index → 15px
+const BASE_TABLET  = 5;  // index → 16px
+const BASE_MOBILE  = 6;  // index → 18px  (elderly-friendly default)
+let   fsIndex;
+
+function calcBaseIndex() {
+  const w = window.innerWidth;
+  if (w < 600)  return BASE_MOBILE;
+  if (w < 900)  return BASE_TABLET;
+  return BASE_DESKTOP;
+}
+
+function applyFontSize(idx) {
+  fsIndex = Math.max(0, Math.min(FONT_STEPS.length - 1, idx));
+  document.documentElement.style.setProperty('--fs-base', FONT_STEPS[fsIndex] + 'px');
+  const labels = ['XS','S','M','L','XL','XL+','2X','2X+','3X'];
+  document.getElementById('sizeVal').textContent = labels[fsIndex] || FONT_STEPS[fsIndex]+'px';
+  try { localStorage.setItem('phc_fs', fsIndex); } catch(e){}
+}
+
+function changeSize(dir) {
+  if (dir === 0) { applyFontSize(calcBaseIndex()); return; }
+  applyFontSize(fsIndex + dir);
+}
+
+// Init: check saved preference, otherwise auto-detect
+(function initFont() {
+  let saved = null;
+  try { saved = localStorage.getItem('phc_fs'); } catch(e){}
+  applyFontSize(saved !== null ? parseInt(saved) : calcBaseIndex());
+})();
+
+// Re-evaluate on resize (e.g., orientation change)
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    let saved = null;
+    try { saved = localStorage.getItem('phc_fs'); } catch(e){}
+    if (saved === null) applyFontSize(calcBaseIndex());
+  }, 200);
+});
+
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+const PHC_RECORDS = [
+  { name:"Work Book",                  url:"https://docs.google.com/spreadsheets/d/1DU51L96kfe42YgevNJgiq6LbkiorrU4-wKU9UyB0juk/edit?pli=1&gid=417075450#gid=417075450",         icon:"book-open",       meta:"Spreadsheet"     },
+  { name:"ASHA Matrix",                url:"https://docs.google.com/spreadsheets/d/1NTZVXjvyNSvSXzYDxEcZZzMZARMIKey4EOuIc5auXyI/edit?gid=1416158381#gid=1416158381",             icon:"users",           meta:"Field Workers"   },
+  { name:"RCH & PMSMA Reports",         url:"https://docs.google.com/spreadsheets/d/1Jff3cojaja0s9y57RTApwXFYJVycuemvSqEBiVOqDyw/edit?gid=1232903172#gid=1232903172",            icon:"clipboard-check", meta:"Maternal Health" },
+  { name:"PHC Profile",                url:"https://docs.google.com/spreadsheets/d/1qm-U10r82s_G6bnzDkmjyNM6yXJ1gNz9MuCIVe6aS3c/edit?usp=sharing",                               icon:"id-card",         meta:"Internal"        },
+  { name:"Monthly Report (Telugu)",    url:"https://docs.google.com/spreadsheets/d/1atvDCP_oTyAjMgC4hIJxKpbdutGKEDj3-ZronZas2-Q/edit?usp=sharing",                               icon:"file-text",       meta:"Monthly"         },
+  { name:"DMHO Monthly 2026-27",       url:"https://docs.google.com/spreadsheets/d/1s26cJmJNCJq7TXCVlyk4lUkufprSuRovrDTaCLOl7j8/edit?gid=890793083#gid=890793083",               icon:"building-2",      meta:"District"        },
+  { name:"NVBDCP Reports",             url:"https://docs.google.com/spreadsheets/d/1xc0pu5mRs3VJ5ZXNCYcczl7SRD0FCnbiZM9lDp8kg3M/edit?usp=sharing",                               icon:"shield-alert",    meta:"Vector Disease"  },
+  { name:"Lab Tests & HMIS",           url:"https://docs.google.com/spreadsheets/d/1jZcb2HRbZv-RRuFtQMUX5w8zqt5fxZPk9v0dqnLO0Z8/edit?usp=sharing",                               icon:"microscope",      meta:"Diagnostics"     },
+  { name:"Staff Attendance",           url:"https://docs.google.com/spreadsheets/d/12izYXq_fJnapFAOkKp5wv0dYE2WZKPn4XQdUO02dfrE/edit?gid=1610117015#gid=1610117015",             icon:"calendar-check",  meta:"Staff"           },
+  { name:"HMIS Reports",               url:"https://docs.google.com/spreadsheets/d/1Hip1SCFxnmX3VSKTLROLrShBzjhwxTGgfRiAi0SEpFM/edit?usp=sharing",                               icon:"bar-chart-2",     meta:"Health MIS"      },
+  { name:"PHC Ranking",                url:"https://docs.google.com/spreadsheets/d/1TE7kVKfXjKpTtXi5gBkGRMmBf1QTthmsVxZaaNHNfCc/edit?gid=700796745#gid=700796745",                      icon:"landmark",        meta:"State Scheme"    },
+  { name:"MDO Office Reports",         url:"https://docs.google.com/spreadsheets/d/1eOulTo6-SH6DVSB17AcqJj3pzdo9r0tB9PvyejEdGTM/edit?usp=sharing",                               icon:"briefcase",       meta:"Office"          },
+  { name:"UDC",                        url:"https://docs.google.com/spreadsheets/d/17ceuTso2ewKvdW9Xn73juSOkjeAJfC-8Msws2JwCKR0/edit?usp=sharing",                                                     icon:"wallet",          meta:"Financial"       },
+  { name:"2026-27 SOE",                url:"https://docs.google.com/spreadsheets/d/1lheqJTv7IswyivhsE4eB0P7E3uByk8YWNuHnu9vlCCU/edit?usp=drivesdk",                                             icon:"wallet",          meta:"Financial"       },
+  { name:"RBSK",                       url:"https://docs.google.com/spreadsheets/d/15vEiloOfbvZWyBJOmz9aDSRyjJRbEvUVCf2TN9JwMXg/edit?gid=455653007#gid=455653007",               icon:"baby",            meta:"Child Health"    },
+  { name:"NLEP",                       url:"https://docs.google.com/spreadsheets/d/1d6iQSBWS9EooN9E-blK0f4H4yqiLbSbC0vJqzpZwq2w/edit?gid=1753264850#gid=1753264850",             icon:"shield",          meta:"Leprosy"         },
+  { name:"EC Data",                    url:"https://docs.google.com/spreadsheets/d/1JGQEzR14jNlj9JqCFZVrzdeZoMXUNICSlrPO0kWIcI0/edit?usp=sharing",                               icon:"server",          meta:"Database"        },
+  { name:"Fever Survey",               url:"https://docs.google.com/spreadsheets/d/14quDD42YitL3ckfqwQwmAesPUWx4VUSO_kpjdRaSVss/edit?gid=2051630049#gid=2051630049",             icon:"thermometer",     meta:"Surveillance"    },
+  { name:"24×7 SN Duty Chart",         url:"https://docs.google.com/spreadsheets/d/1H89XPNdVfwExKNSi4BuBqMSVPIQh9c5EqpIDDzDUBA8/edit?usp=sharing",                               icon:"clock",           meta:"Duty Roster"     },
+  { name:"Monthly Stock Report",       url:"https://docs.google.com/spreadsheets/d/1WFf6Cvmp98mJ2dKEpQOvWAHLz2ripAehQLVVFjaENMI/edit?gid=1770208955#gid=1770208955",             icon:"package",         meta:"Supply Chain"    },
+  { name:"Delivery Register",          url:"https://docs.google.com/spreadsheets/d/1p4xnHNPY9gFjY3j7_UNRjBY4Y8qJjdOJRj9-VYqAdVM/edit?usp=sharing",                               icon:"clipboard-list",  meta:"Maternal"        },
+  { name:"Birth Certificate Register", url:"https://docs.google.com/spreadsheets/d/1Jff3cojaja0s9y57RTApwXFYJVycuemvSqEBiVOqDyw/edit?gid=0#gid=0",                               icon:"file-check",      meta:"Registry"        },
+  { name:"100 Days TB Campaign",       url:"https://docs.google.com/spreadsheets/d/1haG9tbpT7hA_D2IZxFG7SUmiVqACwPVKyfMmW29_JVs/edit?gid=2040186849#gid=2040186849",             icon:"flag",            meta:"Programme"       },
+  { name:"CSSM Reports 2026-27",       url:"https://docs.google.com/spreadsheets/d/1855fn1lfCKp3nKkglfjY_ex7aIHUmGKbLE3BVuQY8jk/edit?gid=657163982#gid=657163982",               icon:"shield-check",    meta:"Programme"       },
+  { name:"SAANS Daily Report",         url:"https://docs.google.com/spreadsheets/d/1UsVx9j9MIJWSHZOVE9GBRGvfR6knAXhJr_fT190Ps-4/edit?gid=0#gid=0",                               icon:"wind",            meta:"Respiratory"     },
+  { name:"PMJAY Status",               url:"https://docs.google.com/spreadsheets/d/1L4jmAkqrkEjcHuQi0u2qJsI0Ts6UUmcicGyBB6z1Mq0/edit?usp=sharing",                               icon:"credit-card",     meta:"Ayushman"        },
+  { name:"Cyclone Disaster (DITWAH)",  url:"https://docs.google.com/spreadsheets/d/1tHM2I6sGfYXOkcmGtzuVcdPWCtlZeIsVjMpO0V7ZAWA/edit?gid=1207601373#gid=1207601373",             icon:"cloud-lightning", meta:"Emergency"       },
+  { name:"NID Action Plan",            url:"https://docs.google.com/spreadsheets/d/1CLOfwsbRfXeCsw_IqSU6sOvwwc4A9cSYHmX86ljH6Zg/edit?gid=560954460#gid=560954460",               icon:"map",             meta:"Programme"       },
+  { name:"NID Reports",                url:"https://docs.google.com/spreadsheets/d/1eOP_ggWn2yX93Gvmwqu4mUcxT8uYdXw2mGyZ6fwHf5M/edit?gid=1571669347#gid=1571669347",             icon:"baby",            meta:"Immunisation"    },
+  { name:"TB Sputum Samples",          url:"https://docs.google.com/forms/d/e/1FAIpQLSfhbBad5NrS4CxJS5pOeWvEhYx2qdnhM9a6crOpo1cHr3IrfA/viewform",                                icon:"test-tube",       meta:"Lab Form"        },
+  { name:"MPHA(M) Reports",            url:"https://docs.google.com/spreadsheets/d/1X9jTNafqwbPd4z_QrZXMXenJqcj0wiYuon4wvOkRudA/edit?gid=0#gid=0",                               icon:"hard-hat",        meta:"Staff"           },
+  { name:"APNGGO Lists",               url:"https://docs.google.com/spreadsheets/d/1nj2cWtBVALUWbcoMuL5YusyLEhYnxpKubw1WY8JpVSs/edit?gid=627159350#gid=627159350",               icon:"list",            meta:"Staff Directory" },
+  { name:"Cancer Screening",           url:"https://docs.google.com/spreadsheets/d/1wxQf6C3KRyW4svpMsMsFGwpnBg3NPIBQEcmbD6xtHus/edit?gid=253039871#gid=253039871",               icon:"scan",            meta:"Screening"       },
+  { name:"HPV Micro Action Plan",      url:"https://docs.google.com/spreadsheets/d/1tO_UJ8v0UwykIsNOFOXJPRIZ2QHVHHyhPYrnH01XE1I/edit?gid=1883692028#gid=1883692028",             icon:"target",          meta:"Vaccine Plan"    },
+  { name:"HPV Girls Line List",        url:"https://docs.google.com/spreadsheets/d/1whaBmfa0_e663q_VxrnoE-MjmPqsCMzri3zxnGdWlsE/edit?gid=707564847#gid=707564847",               icon:"users",           meta:"Immunisation"    },
+  { name:"2025-26 PHC Reports",        url:"https://docs.google.com/forms/d/1L98uzQs3KJAiEY5z4B1-PdmFJUZZ7hHnsRb21RgvEds/preview",                                               icon:"folder-open",     meta:"Annual Report"   },
+];
+
+const WEB_PORTALS = [
+  { name:"CM Health Dashboard",  url:"http://apchfw.ap.gov.in/apchfw-dashboard/",    icon:"gauge",          meta:"State Portal"    },
+  { name:"EHR Dashboard",        url:"https://ehr.ap.gov.in/dashboard/",             icon:"layout",         meta:"Records"         },
+  { name:"Health FRS",           url:"https://healthfrs.ap.gov.in/login",            icon:"eye",            meta:"Login"           },
+  { name:"RCH Portal",           url:"https://rchrpt.mohfw.gov.in/RCHRPT/homepage.aspx", icon:"globe",      meta:"Central"         },
+  { name:"RMNCH (RCH 2.0)",      url:"https://www.rmnch.mohfw.gov.in/login",         icon:"heart",          meta:"Maternal & Child"},
+  { name:"HWC Portal",           url:"https://aam.mohfw.gov.in/home/login",          icon:"building",       meta:"Wellness Centre" },
+  { name:"EHR Admin",            url:"https://ehr.ap.gov.in/admin/",                 icon:"user-check",     meta:"Admin"           },
+  { name:"e-Aushadhi",           url:"https://eaushadhiap.dcservices.in/IMCS/hissso/Login.imcs", icon:"pill", meta:"Drug Supply"   },
+  { name:"e-Sanjeevani",         url:"https://esanjeevani.mohfw.gov.in/#/",          icon:"video",          meta:"Telemedicine"    },
+  { name:"IHIP VBD",             url:"https://ihip.mohfw.gov.in/vbd/#!/",            icon:"bug",            meta:"Vector Diseases" },
+  { name:"IHIP Main",            url:"https://ihip.mohfw.gov.in/idsp/#!/login",      icon:"search",         meta:"Surveillance"    },   
+  { name:"HMIS",                 url:"https://hmis.mohfw.gov.in/#!/login",           icon:"database",       meta:"Health MIS"      },
+  { name:"CSSM State Portal",    url:"http://hmfw.ap.gov.in/login.aspx",             icon:"shield",         meta:"State"           },
+  { name:"PMSMA",                url:"https://pmsma.mohfw.gov.in/pmsma-app/LoginController", icon:"activity", meta:"Antenatal Care"},
+  { name:"saQsham",              url:"https://saqsham.nhsrcindia.org/IMCS/login",    icon:"award",          meta:"Quality"         },
+  { name:"NIDHI Finance",        url:"https://nidhi.apcfss.in/",                     icon:"coins",          meta:"State Finance"   },
+  { name:"CFMS",                 url:"https://prdcfms.apcfss.in:44300/sap/bc/ui5_ui5/ui2/ushell/shells/abap/FioriLaunchpad.html?sap-client=350", icon:"wallet", meta:"Finance"},
+  { name:"APCOS",                url:"https://apcosapp.apcfss.in/Login.do",          icon:"briefcase",      meta:"Govt Services"   },
+  { name:"PFMS",                 url:"https://pfms.nic.in/Users/LoginDetails/NewLayoutLogin.aspx", icon:"landmark", meta:"Central Finance"},
+  { name:"GPF Slips",            url:"https://ag.ap.nic.in/SlipsGpf.aspx",           icon:"file-text",      meta:"Staff Finance"   },
+  { name:"CRS Birth/Death",      url:"https://dc.crsorgi.gov.in/crs/Auth/admin",     icon:"pen-tool",       meta:"Civil Register"  },
+  { name:"MPCDSR",               url:"https://stg.mpcdsrindia.in/#/login",           icon:"clipboard",      meta:"Death Review"    },
+  { name:"NIKUSTH (Leprosy)",    url:"https://leprosy.icmr.org.in/",                 icon:"microscope",     meta:"ICMR"            },
+  { name:"Nikshay Aushadhi",     url:"https://nikshayaushadhi.in/IMCS/hissso/loginLogin.imcs", icon:"box",  meta:"TB Supply"       },
+  { name:"FPLMIS",               url:"https://fplmismohfw.in/IMCS/hissso/Login.fp",  icon:"heart",          meta:"Family Planning" },
+  { name:"HPR ID (ABDM)",        url:"https://hprid.abdm.gov.in/",                   icon:"id-card",        meta:"Health ID"       },
+  { name:"U-WIN Vaccinator",     url:"https://uwinvaccinator.mohfw.gov.in/auth/login", icon:"syringe",      meta:"Immunisation"    },
+  { name:"TB-WIN Vaccinator",    url:"https://vaccinator.tb-win.mohfw.gov.in/auth/login", icon:"shield-plus", meta:"TB Vaccine"   },
+  { name:"Swarnandhra Portal",   url:"https://swarnaandhra.apcfss.in/SwarnandhraLogin", icon:"star",        meta:"State Scheme"   },
+  { name:"CoWIN",                url:"https://app.cowin.gov.in/login",                icon:"check-circle",   meta:"Vaccination"     },
+  { name:"Dr NTR Vaidyaseva",    url:"https://app.drntrvaidyaseva.ap.gov.in/ASRI/",  icon:"activity",       meta:"Health Scheme"   },
+];
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let currentPage = 'records';  // 'records' | 'portals'
+let searchQuery = '';
+
+/* ═══════════════════════════════════════
+   BUILD GRID
+═══════════════════════════════════════ */
+function buildGrid(containerId, data, query) {
+  const g = document.getElementById(containerId);
+  g.innerHTML = '';
+  const q = query.toLowerCase();
+  const items = q
+    ? data.filter(d => d.name.toLowerCase().includes(q) || d.meta.toLowerCase().includes(q))
+    : data;
+
+  if (!items.length) {
+    g.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <h3>No results</h3>
+        <p>Try a different search term.</p>
+      </div>`;
+    return;
+  }
+
+  items.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.tabIndex = 0;
+    el.style.animationDelay = `${i * 22}ms`;
+    el.innerHTML = `
+      <div class="c-icon">
+        <svg data-lucide="${item.icon}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"></svg>
+      </div>
+      <div class="c-name">${item.name}</div>
+      <div class="c-foot">
+        <span class="c-meta">${item.meta}</span>
+        <span class="c-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+        </span>
+      </div>`;
+    el.onclick = () => openLink(item.url);
+    el.onkeydown = e => { if (e.key === 'Enter') el.click(); };
+    g.appendChild(el);
+    requestAnimationFrame(() => setTimeout(() => el.classList.add('in'), 10));
+  });
+
+  lucide.createIcons();
+}
+
+/* ═══════════════════════════════════════
+   RENDER
+═══════════════════════════════════════ */
+function render() {
+  if (currentPage === 'records') {
+    buildGrid('grid', PHC_RECORDS, searchQuery);
+    document.getElementById('portalsSection').style.display = 'none';
+  } else {
+    // portals page: main grid is portals, portals section hidden
+    buildGrid('grid',WEB_PORTALS, searchQuery);
+    document.getElementById('portalsSection').style.display = 'none';
+  }
+}
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+function showOv(label) {
+  document.getElementById('navOvLabel').textContent = label;
+  document.getElementById('navOv').classList.add('on');
+}
+function hideOv() { document.getElementById('navOv').classList.remove('on'); }
+
+function goRecords() {
+  if (currentPage === 'records') { closeSidebar(); return; }
+  showOv('Loading PHC Records…');
+  setTimeout(() => {
+    currentPage = 'records';
+    searchQuery = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('heroTitle').innerHTML = 'PHC <em>Records</em>';
+    document.getElementById('heroSub').textContent = 'All clinical reports, staff records, programme data, and administrative documents for PHC Pedakallepalli.';
+    document.getElementById('topTitle').textContent = 'PHC Records';
+    document.getElementById('backBtn').classList.remove('show');
+    document.getElementById('nb-records').classList.add('active');
+    document.getElementById('nb-portals').classList.remove('active');
+    render();
+    hideOv();
+    window.scrollTo({top:0,behavior:'smooth'});
+    closeSidebar();
+  }, 650);
+}
+
+function goPortals() {
+  if (currentPage === 'portals') { closeSidebar(); return; }
+  showOv('Loading Web Portals…');
+  setTimeout(() => {
+    currentPage = 'portals';
+    searchQuery = '';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('heroTitle').innerHTML = 'Government <em>Web Portals</em>';
+    document.getElementById('heroSub').textContent = 'State and central government health IT portals, finance systems, and disease surveillance dashboards.';
+    document.getElementById('topTitle').textContent = 'Web Portals';
+    document.getElementById('backBtn').classList.add('show');
+    document.getElementById('nb-portals').classList.add('active');
+    document.getElementById('nb-records').classList.remove('active');
+    render();
+    hideOv();
+    window.scrollTo({top:0,behavior:'smooth'});
+    closeSidebar();
+  }, 650);
+}
+
+function openLink(url) {
+  if (!url) return;
+  document.getElementById('linkOv').classList.add('on');
+  setTimeout(() => {
+    window.open(url, '_blank');
+    document.getElementById('linkOv').classList.remove('on');
+  }, 650);
+}
+
+/* ═══════════════════════════════════════
+   THEME
+═══════════════════════════════════════ */
+
+// Default accent per theme — used by reset
+const THEME_DEFAULTS = {
+  warm:  { light: '#2D5016', dark: '#6DB35A' },
+  slate: { light: '#1A4480', dark: '#7EB3F5' },
+  dusk:  { light: '#C8A96E', dark: '#E8C98E' },
+};
+
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.querySelectorAll('.swatch').forEach(s => s.classList.toggle('on', s.dataset.t === t));
+  try { localStorage.setItem('phc_theme', t); } catch(e){}
+  // Reapply saved custom accent or reset to new theme default
+  let savedColor = null;
+  try { savedColor = localStorage.getItem('phc_accent'); } catch(e){}
+  if (savedColor) {
+    applyAccentColor(savedColor, false);
+  } else {
+    const isDark = t === 'dusk';
+    applyAccentColor(THEME_DEFAULTS[t][isDark ? 'dark' : 'light'], false);
+  }
+}
+
+// Restore saved theme
+(function() {
+  try {
+    const t = localStorage.getItem('phc_theme');
+    if (t) setTheme(t);
+  } catch(e){}
+})();
+
+/* ═══════════════════════════════════════
+   COLOUR WHEEL ENGINE
+═══════════════════════════════════════ */
+
+// ── Preset hues (hand-picked, aesthetically curated)
+const PRESETS = [
+  { h:142, s:55, l:25, label:'Forest'   },
+  { h:215, s:65, l:30, label:'Navy'     },
+  { h:258, s:50, l:35, label:'Violet'   },
+  { h:340, s:55, l:32, label:'Berry'    },
+  { h:16,  s:70, l:32, label:'Rust'     },
+  { h:36,  s:75, l:30, label:'Amber'    },
+  { h:175, s:55, l:28, label:'Teal'     },
+  { h:194, s:60, l:32, label:'Steel'    },
+  { h:0,   s:55, l:32, label:'Crimson'  },
+  { h:88,  s:45, l:30, label:'Olive'    },
+];
+
+// Current wheel state
+let wheelH = 142, wheelS = 55, wheelL = 35;
+const WHEEL_R = 80; // canvas half-size
+
+// ── Draw the hue/saturation wheel
+function drawWheel() {
+  const canvas = document.getElementById('colorWheel');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = WHEEL_R, cy = WHEEL_R, r = WHEEL_R - 2;
+
+  for (let angle = 0; angle < 360; angle += 1) {
+    const startAngle = (angle - 1) * Math.PI / 180;
+    const endAngle   = (angle + 1) * Math.PI / 180;
+    for (let sat = 0; sat <= r; sat += 1) {
+      const frac = sat / r;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, sat, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = `hsl(${angle}, ${Math.round(frac * 100)}%, ${wheelL}%)`;
+      ctx.fill();
+    }
+  }
+  // White centre dot
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.fill();
+}
+
+// ── Position the cursor on the wheel from current H/S
+function syncCursor() {
+  const cursor = document.getElementById('wheelCursor');
+  const canvas = document.getElementById('colorWheel');
+  if (!cursor || !canvas) return;
+  const rect  = canvas.getBoundingClientRect();
+  const angle = wheelH * Math.PI / 180;
+  const dist  = (wheelS / 100) * (WHEEL_R - 2);
+  const x = WHEEL_R + dist * Math.cos(angle);
+  const y = WHEEL_R + dist * Math.sin(angle);
+  cursor.style.left = x + 'px';
+  cursor.style.top  = y + 'px';
+  cursor.style.background = currentHex();
+}
+
+// ── Lightness slider gradient
+function updateSliderGradient() {
+  const slider = document.getElementById('lightnessSlider');
+  if (!slider) return;
+  slider.style.background =
+    `linear-gradient(to right,
+      hsl(${wheelH},${wheelS}%,10%),
+      hsl(${wheelH},${wheelS}%,35%),
+      hsl(${wheelH},${wheelS}%,65%),
+      hsl(${wheelH},${wheelS}%,90%))`;
+}
+
+// ── HSL → Hex
+function hslToHex(h, s, l) {
+  s /= 100; l /= 100;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color).toString(16).padStart(2, '0');
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+function currentHex() { return hslToHex(wheelH, wheelS, wheelL); }
+
+// ── Apply accent colour to CSS vars + UI elements
+function applyAccentColor(hex, save = true) {
+  // Parse hex → derive a slightly lighter variant for accent-2
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  const lighter = `rgba(${r},${g},${b},0.13)`;
+  const hex2 = lightenHex(hex, 12);
+
+  const root = document.documentElement;
+  root.style.setProperty('--accent',   hex);
+  root.style.setProperty('--accent-2', hex2);
+  root.style.setProperty('--gold',     hex);
+  root.style.setProperty('--gold-lt',  lighter);
+
+  // Sync trigger preview
+  const dot   = document.getElementById('colorDotPreview');
+  const label = document.getElementById('colorTriggerLabel');
+  if (dot)   dot.style.background = hex;
+  if (label) label.textContent    = hex.toUpperCase();
+
+  // Sync live preview elements
+  const prevBtn  = document.getElementById('prevBtn');
+  const prevIcon = document.getElementById('prevIcon');
+  const prevText = document.getElementById('prevText');
+  const prevDot  = document.getElementById('prevDot');
+  if (prevBtn)  prevBtn.style.background  = hex;
+  if (prevIcon) prevIcon.style.background = hex;
+  if (prevText) prevText.style.color      = hex;
+  if (prevDot)  prevDot.style.background  = hex;
+
+  if (save) {
+    try { localStorage.setItem('phc_accent', hex); } catch(e){}
+  }
+}
+
+function lightenHex(hex, amount) {
+  const r = Math.min(255, parseInt(hex.slice(1,3),16) + amount);
+  const g = Math.min(255, parseInt(hex.slice(3,5),16) + amount);
+  const b = Math.min(255, parseInt(hex.slice(5,7),16) + amount);
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+
+// ── Wheel pointer interaction
+function wheelPick(e) {
+  const canvas = document.getElementById('colorWheel');
+  const rect   = canvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  let dx = (clientX - rect.left)  * (canvas.width  / rect.width)  - WHEEL_R;
+  let dy = (clientY - rect.top)   * (canvas.height / rect.height) - WHEEL_R;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  const maxR = WHEEL_R - 2;
+  if (dist > maxR) { dx *= maxR/dist; dy *= maxR/dist; }
+  wheelH = ((Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360;
+  wheelS = Math.min(100, Math.round((Math.sqrt(dx*dx + dy*dy) / maxR) * 100));
+  redrawAll();
+}
+
+function redrawAll() {
+  drawWheel();
+  syncCursor();
+  updateSliderGradient();
+  applyAccentColor(currentHex());
+  syncPresetHighlight();
+}
+
+// ── Build preset dots
+function buildPresets() {
+  const wrap = document.getElementById('huePresets');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  PRESETS.forEach((p, i) => {
+    const hex = hslToHex(p.h, p.s, p.l);
+    const el  = document.createElement('div');
+    el.className   = 'hue-preset';
+    el.title       = p.label;
+    el.style.background = hex;
+    el.dataset.index    = i;
+    el.onclick = () => {
+      wheelH = p.h; wheelS = p.s; wheelL = p.l;
+      document.getElementById('lightnessSlider').value = p.l;
+      redrawAll();
+    };
+    wrap.appendChild(el);
+  });
+}
+
+function syncPresetHighlight() {
+  document.querySelectorAll('.hue-preset').forEach((el, i) => {
+    const p = PRESETS[i];
+    const match = Math.abs(p.h - wheelH) < 8 && Math.abs(p.s - wheelS) < 10 && Math.abs(p.l - wheelL) < 8;
+    el.classList.toggle('active-preset', match);
+  });
+}
+
+// ── Toggle popover
+function toggleColorPop() {
+  const pop  = document.getElementById('colorPopover');
+  const trig = document.getElementById('colorTrigger');
+  const open = pop.classList.toggle('open');
+  trig.classList.toggle('open', open);
+  if (open) {
+    drawWheel();
+    syncCursor();
+    updateSliderGradient();
+    buildPresets();
+    syncPresetHighlight();
+  }
+}
+
+// ── Lightness slider
+(function() {
+  document.addEventListener('DOMContentLoaded', () => {
+    const slider = document.getElementById('lightnessSlider');
+    if (slider) {
+      slider.addEventListener('input', () => {
+        wheelL = parseInt(slider.value);
+        redrawAll();
+      });
+    }
+  });
+})();
+
+// Attach after splash resolves
+function initColorWheel() {
+  const canvas = document.getElementById('colorWheel');
+  if (!canvas) return;
+
+  let dragging = false;
+  canvas.addEventListener('mousedown',  e => { dragging = true; wheelPick(e); });
+  canvas.addEventListener('mousemove',  e => { if (dragging) wheelPick(e); });
+  window.addEventListener('mouseup',    () => { dragging = false; });
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); wheelPick(e); }, { passive: false });
+  canvas.addEventListener('touchmove',  e => { e.preventDefault(); wheelPick(e); }, { passive: false });
+
+  const slider = document.getElementById('lightnessSlider');
+  if (slider) {
+    slider.addEventListener('input', () => {
+      wheelL = parseInt(slider.value);
+      redrawAll();
+    });
+  }
+
+  // Restore saved accent
+  let savedAccent = null;
+  try { savedAccent = localStorage.getItem('phc_accent'); } catch(e){}
+  if (savedAccent) {
+    applyAccentColor(savedAccent, false);
+    // Approximate H/S/L from saved hex
+    const r = parseInt(savedAccent.slice(1,3),16)/255;
+    const g = parseInt(savedAccent.slice(3,5),16)/255;
+    const b = parseInt(savedAccent.slice(5,7),16)/255;
+    const max = Math.max(r,g,b), min = Math.min(r,g,b), d = max - min;
+    wheelL = Math.round(((max+min)/2)*100);
+    wheelS = d === 0 ? 0 : Math.round((d / (1 - Math.abs(2*(wheelL/100)-1)))*100);
+    if (d === 0) wheelH = 0;
+    else if (max === r) wheelH = Math.round(((g-b)/d + (g<b?6:0))*60);
+    else if (max === g) wheelH = Math.round(((b-r)/d + 2)*60);
+    else wheelH = Math.round(((r-g)/d + 4)*60);
+    if (slider) slider.value = wheelL;
+  } else {
+    // Default matches warm theme
+    wheelH = 142; wheelS = 55; wheelL = 35;
+    if (slider) slider.value = wheelL;
+  }
+}
+
+// ── Reset to theme default
+function resetAccentColor() {
+  const t = document.documentElement.getAttribute('data-theme') || 'warm';
+  const isDark = t === 'dusk';
+  const hex = THEME_DEFAULTS[t][isDark ? 'dark' : 'light'];
+  // Remove override
+  try { localStorage.removeItem('phc_accent'); } catch(e){}
+  // Also remove the inline CSS overrides so theme vars take back over
+  const root = document.documentElement;
+  root.style.removeProperty('--accent');
+  root.style.removeProperty('--accent-2');
+  root.style.removeProperty('--gold');
+  root.style.removeProperty('--gold-lt');
+  // Re-sync preview to theme
+  const dot   = document.getElementById('colorDotPreview');
+  const label = document.getElementById('colorTriggerLabel');
+  const computed = getComputedStyle(root).getPropertyValue('--accent').trim();
+  if (dot)   dot.style.background   = '';
+  if (label) label.textContent      = 'Theme default';
+  const prevBtn  = document.getElementById('prevBtn');
+  const prevIcon = document.getElementById('prevIcon');
+  const prevText = document.getElementById('prevText');
+  const prevDot  = document.getElementById('prevDot');
+  if (prevBtn)  prevBtn.style.background  = '';
+  if (prevIcon) prevIcon.style.background = '';
+  if (prevText) prevText.style.color      = '';
+  if (prevDot)  prevDot.style.background  = '';
+  // Reset wheel state to theme default
+  const p = { warm:'#2D5016', slate:'#1A4480', dusk:'#C8A96E' }[t] || '#2D5016';
+  const r2 = parseInt(p.slice(1,3),16)/255, g2=parseInt(p.slice(3,5),16)/255, b2=parseInt(p.slice(5,7),16)/255;
+  const max2=Math.max(r2,g2,b2), min2=Math.min(r2,g2,b2), d2=max2-min2;
+  wheelL = Math.round(((max2+min2)/2)*100);
+  wheelS = d2===0?0:Math.round((d2/(1-Math.abs(2*(wheelL/100)-1)))*100);
+  if (d2===0) wheelH=0;
+  else if (max2===r2) wheelH=Math.round(((g2-b2)/d2+(g2<b2?6:0))*60);
+  else if (max2===g2) wheelH=Math.round(((b2-r2)/d2+2)*60);
+  else wheelH=Math.round(((r2-g2)/d2+4)*60);
+  const slider = document.getElementById('lightnessSlider');
+  if (slider) slider.value = wheelL;
+  drawWheel(); syncCursor(); updateSliderGradient(); buildPresets(); syncPresetHighlight();
+}
+
+/* ═══════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════ */
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value;
+  render();
+});
+
+/* ═══════════════════════════════════════
+   MOBILE SIDEBAR
+═══════════════════════════════════════ */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('mobShade').classList.add('on');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('mobShade').classList.remove('on');
+}
+
+/* ═══════════════════════════════════════
+   SPLASH → APP
+═══════════════════════════════════════ */
+setTimeout(() => {
+  const s = document.getElementById('splash');
+  s.style.opacity = '0';
+  s.style.transform = 'scale(1.02)';
+  setTimeout(() => {
+    s.style.display = 'none';
+    const a = document.getElementById('app');
+    a.classList.add('show');
+    render();
+    setTimeout(initColorWheel, 100);
+  }, 560);
+}, 2300);
+</script>
+</body>
+</html>
